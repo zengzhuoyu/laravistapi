@@ -7,9 +7,19 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 
 use App\Lesson;
+use App\Transformer\LessonTransformer;
 
 class LessonController extends Controller
 {
+    
+    //依赖注入
+    protected $lessonTransformer;
+
+    public function __construct(LessonTransformer $lessonTransformer)
+    {
+    	$this->lessonTransformer = $lessonTransformer;
+    }
+
     public function index()
     {
 
@@ -17,7 +27,7 @@ class LessonController extends Controller
     	return \Response::json([
     		'status' => 'success',
     		'status_code' => 200,
-    		'data' => $this->_transformCollection($lessons)
+    		'data' => $this->lessonTransformer->transformCollection($lessons->toArray())
     	]);    		
     }
 
@@ -28,21 +38,8 @@ class LessonController extends Controller
     	return \Response::json([
     		'status' => 'success',
     		'status_code' => 200,
-    		'data' => $this->_transform($lesson)
+    		'data' => $this->lessonTransformer->transform($lesson)
     	]);    	
     }    
 
-    private function _transformCollection($lessons)
-    {	
-    	return array_map([$this,'_transform'],$lessons->toArray());
-    }
-
-    private function _transform($lesson)
-    {
-	return [//api字段映射：不允许原始字段名返回、没有匹配的字段将被清除
-		'title' => $lesson['title'],
-		'content' => $lesson['body'],
-		'is_free' => (boolean) $lesson['free']
-	];
-    }
 }
