@@ -26,11 +26,11 @@ class ApiController extends Controller
     //404错误回应
     public function responseNotFound($message = 'Not Found')
     {
-    	return $this->setStatusCode(404)->_responseError($message);
+    	return $this->setStatusCode(404)->responseError($message);
     }
 
     //错误的回应
-    private function _responseError($message)
+    public function responseError($message)
     {
    	return $this->response([
     		'status' => 'failed',
