@@ -9,7 +9,7 @@ use App\Http\Requests;
 use App\Lesson;
 use App\Transformer\LessonTransformer;
 
-class LessonController extends Controller
+class LessonController extends ApiController
 {
     
     //依赖注入
@@ -24,20 +24,22 @@ class LessonController extends Controller
     {
 
     	$lessons = Lesson::all();
-    	return \Response::json([
-    		'status' => 'success',
-    		'status_code' => 200,
-    		'data' => $this->lessonTransformer->transformCollection($lessons->toArray())
-    	]);    		
+	return $this->response([
+		'status' => 'success',
+		'data' => $this->lessonTransformer->transformCollection($lessons->toArray())
+	]);		
     }
 
     public function show($id)
     {
-    	$lesson = Lesson::findOrFail($id);
+    	$lesson = Lesson::find($id);
 
-    	return \Response::json([
+    	if(!$lesson){
+    		return $this->responseNotFound();//链式操作
+    	}
+
+    	return $this->response([
     		'status' => 'success',
-    		'status_code' => 200,
     		'data' => $this->lessonTransformer->transform($lesson)
     	]);    	
     }    
